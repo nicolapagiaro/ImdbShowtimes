@@ -1,6 +1,8 @@
 package com.nicola.imdbshowtimes;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -8,6 +10,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.regex.Pattern;
 
 /**
@@ -87,7 +90,23 @@ public class ImdbShowtimes {
             try {
                 doc = Jsoup.connect(cinemaUrl).get();
 
-                Elements kmGroup = doc.getElementsByClass("li_group");
+                Elements kmCount = doc.getElementsByClass("li_group");
+                HashMap<Integer, Integer> kmAndCountMap = new HashMap<>();
+                for (Element kmItem : kmCount) {
+                    int km = Integer.parseInt(kmCount.get(0)
+                                    .text()
+                                    .replaceAll("[^\\d.]", ""));
+                    int count = Integer.parseInt(kmCount.get(0)
+                            .getElementsByTag("span")
+                            .text()
+                            .replace("(", "")
+                            .replace(")", "")
+                            .trim());
+                    kmAndCountMap.put(km, count);
+                }
+
+                Log.d("Mappa", kmAndCountMap.toString());
+
                 Elements eOdd = doc.getElementById("cinemas-at-list")
                         .getElementsByClass("list_item odd");
                 Elements eEven = doc.getElementById("cinemas-at-list")
